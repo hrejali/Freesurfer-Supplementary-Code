@@ -40,12 +40,13 @@ end
 
 for i=1:42
     for j=1:length(Output.LabelName)
+        for k=1:2
         try
-        Output.Subj(i).LabelMean(j)=mean(Output.Subj(i).OverlayThresh(i).lh(Output.Label(j).lh));
+        Output.Subj(i).LabelMean(j).Depth(k)=mean(Output.Subj(i).OverlayThresh(k).lh(Output.Label(j).lh));
         catch
             
         end
-
+        end
     end
 end
 %Struct.OverlayThresh(1).lh(Struct.Label(7).lh)
