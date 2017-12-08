@@ -36,7 +36,7 @@ for i=2:41
     end
 end
 
-
+%Storing Mean values at a particular label for each patient and depth
 
 for i=1:42
     for j=1:length(Output.LabelName)
@@ -52,13 +52,27 @@ for i=1:42
     end
 end
 
+%%
+%Creating plots for the mean values 
 
 
-%
-% for i=1:41
-%     if(i==15)
-%         x(i)=0;continue;
-%     end
-%     x(i)=Output.Subj(i).LabelMean(7).rh.Depth(1)
-% end
-% scatter(1:41,x)
+for j=1:76
+    for i=1:41
+        if(i==15)
+            x(i)=0;continue;
+        end
+        try
+            RH_Mean(i)=Output.Subj(i).LabelMean(j).rh.Depth(1);
+            LH_Mean(i)=Output.Subj(i).LabelMean(j).lh.Depth(1);
+ 
+        end
+    end
+    try
+        subplot(4,19,j); scatter(1:41,RH_Mean); %title(Output.LabelName(j));xlabel('Subjects');ylabel('Mean R1 Intensity')
+        hold on;
+        subplot(4,19,j); scatter(1:41,LH_Mean,'r'); %title(Output.LabelName(j));xlabel('Subjects');ylabel('Mean R1 Intensity')
+
+    end
+    
+end
+scatter(1:41,x)
