@@ -1,0 +1,53 @@
+#!/bin/bash
+
+
+SUBJECTS_DIR=freesurfer
+
+
+
+
+for hemi in lh rh
+do
+
+for fwhm in 15 20 25
+do
+
+
+for dist in 2
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output ] 
+then
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_glmfit --y $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/${hemi}.R1.fsaverage.mgh --fsgd $SUBJECTS_DIR/Group_Analysis/fsgd --C $SUBJECTS_DIR/Group_Analysis/Diff-con-scz-R1.mat --glmdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output --surf fsaverage $hemi --mask $SUBJECTS_DIR/mask/mask.mgh
+done
+
+
+for frac in 5
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output ]
+then
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_glmfit --y $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/${hemi}.R1.fsaverage.mgh --fsgd $SUBJECTS_DIR/Group_Analysis/fsgd --C $SUBJECTS_DIR/Group_Analysis/Diff-con-scz-R1.mat --glmdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output --surf fsaverage $hemi --mask $SUBJECTS_DIR/mask/mask.mgh
+
+done
+
+done
+done

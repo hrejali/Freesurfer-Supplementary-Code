@@ -1,0 +1,72 @@
+#!/bin/bash
+
+
+SUBJECTS_DIR=freesurfer
+
+
+for thresh in 0.5 0.1 0.05 0.01
+do
+for sign in neg pos
+do
+for hemi in lh rh
+do
+for fwhm in 15 20
+do
+
+
+
+for dist in 2
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected ]
+then
+
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected
+
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_fdr --fdr $thresh --${sign} --i $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Diff-con-scz-R1/sig.mgh $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/mask.mgh $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected/FDR-Output-${sign}-thresh${thresh}.mgh
+
+done
+
+$SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output
+
+
+
+
+for frac in 5
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected ]
+then
+
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_fdr --fdr ${thresh} --${sign} --i $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Diff-con-scz-R1/sig.mgh $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/mask.mgh $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected/FDR-Output-${sign}-thresh${thresh}.mgh
+
+
+
+
+done
+
+
+
+
+
+
+done
+done
+
+done
+done

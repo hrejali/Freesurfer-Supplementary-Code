@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for subj in $@
+do
+reg_intrasubj_aladin t1map t1_head $subj
+done

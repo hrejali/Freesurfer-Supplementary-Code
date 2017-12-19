@@ -1,0 +1,93 @@
+#!/bin/bash
+
+
+SUBJECTS_DIR=freesurfer
+
+
+
+for subj in $@
+do
+
+
+
+
+
+t1=$subj/extra_mri/t1map.nii.gz
+xfm_t1map_t1=$subj/coreg/affine_aladin_t1map_t1_head/t1map_to_t1_head.xfm
+
+fs_dir=$SUBJECTS_DIR/anat3T$subj
+
+orig_mgz=$fs_dir/mri/orig.mgz
+orig=$fs_dir/mri/orig.nii.gz
+
+
+t1_fs=$fs_dir/mri/t1map_fs.nii.gz
+r1_fs=$fs_dir/mri/R1.nii.gz
+r1_mgz=$fs_dir/mri/R1.mgz
+
+if [ ! -e $r1_mgz ]
+then
+
+mri_convert $orig_mgz $orig
+
+reg_resample -flo $t1 -ref $orig -aff $xfm_t1map_t1 -res $t1_fs
+
+#convert to R1
+fslmaths $t1_fs -mul 0 -add 1 -div $t1_fs -mul 1000 $r1_fs
+
+mri_convert $r1_fs $r1_mgz -ns 1 #make sure no rescaling
+
+fi
+
+
+
+
+
+
+for hemi in lh rh
+do
+
+
+for fwhm in 5
+do
+
+
+for dist in 1 2 3 4 5 
+do
+mri_vol2surf --src $fs_dir/mri/R1.mgz --regheader anat3T$subj --hemi $hemi --surf pial --o $fs_dir/surf/${hemi}.curv --surf-fwhm $fwhm --projdist 0.$dist 
+
+out=$(($dist*5))
+mri_surf2surf --srcsubject anat3T$subj --trgsubject fsaverage --hemi $hemi --sval $fs_dir/surf/${hemi}.curv --tval $fs_dir/surf/${hemi}.curv.fwhm$out.fsaverage.mgh
+ 
+for surf in pial white inflated
+do
+#use these to write out vtk files
+mris_convert  -c $fs_dir/surf/${hemi}.curv.fwhm$out.fsaverage.mgh $FREESURFER_HOME/subjects/fsaverage/surf/${hemi}.$surf $fs_dir/surf/${hemi}.curv.fwhm$out.fsaverage.$surf.vtk
+done
+done
+
+if false
+then
+
+for frac in 5 
+do
+mri_vol2surf --src $fs_dir/mri/R1.mgz --regheader anat3T$subj --hemi $hemi --surf pial --out $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.mgh --surf-fwhm $fwhm --projfrac 0.$frac 
+
+mri_surf2surf --srcsubject anat3T$subj --trgsubject fsaverage --hemi $hemi --sval $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.mgh --tval $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.fsaverage.mgh
+ 
+for surf in pial white inflated
+do
+#use these to write out vtk files
+echo mris_convert  -c $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.mgh $fs_dir/surf/${hemi}.$surf $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.$surf.vtk
+ mris_convert  -c $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.fsaverage.mgh $FREESURFER_HOME/subjects/fsaverage/surf/${hemi}.$surf $fs_dir/surf/${hemi}.R1_projfrac${frac}.fwhm$fwhm.fsaverage.$surf.vtk
+done
+done
+
+fi
+
+done
+
+
+
+done
+done

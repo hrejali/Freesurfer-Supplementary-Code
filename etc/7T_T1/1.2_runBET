@@ -1,0 +1,7 @@
+#!/bin/bash
+
+for subj in $@
+do
+ bet ./$subj/t1/t1.nii.gz ./$subj/t1/t1.brain.nii.gz -f 0.2 -B; 
+done
+

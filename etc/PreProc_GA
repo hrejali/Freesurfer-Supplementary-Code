@@ -1,0 +1,53 @@
+#!/bin/bash
+
+SUBJECTS_DIR=freesurfer
+
+
+
+
+
+for hemi in lh rh
+do
+
+for fwhm in 15 20 25
+do
+
+for frac in 5
+do
+
+
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm} ]
+then
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+mris_preproc --s anat3T01 --s anat3T02 --s anat3T03 --s anat3T04 --s anat3T05 --s anat3T06 --s anat3T07 --s anat3T08 --s anat3T09 --s anat3T10 --s anat3T11 --s anat3T12 --s anat3T13 --s anat3T14 --s anat3T16 --s anat3T17 --s anat3T18 --s anat3T19 --s anat3T20 --s anat3T21 --s anat3T22 --s anat3T23 --s anat3T24 --s anat3T25 --s anat3T26 --s anat3T27 --s anat3T28 --s anat3T29 --s anat3T30 --s anat3T31 --s anat3T32 --s anat3T33 --s anat3T34 --s anat3T35 --s anat3T36 --s anat3T37 --s anat3T38 --s anat3T39 --s anat3T40 --s anat3T41 --target fsaverage --hemi $hemi --meas R1_projfrac0.$frac.mgh --fwhm $fwhm --hemi $hemi --out $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/${hemi}.R1.fsaverage.mgh
+
+done
+
+
+
+
+
+
+for dist in 2
+do
+
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm} ]
+then
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+mris_preproc --s anat3T01 --s anat3T02 --s anat3T03 --s anat3T04 --s anat3T05 --s anat3T06 --s anat3T07 --s anat3T08 --s anat3T09 --s anat3T10 --s anat3T11 --s anat3T12 --s anat3T13 --s anat3T14 --s anat3T16 --s anat3T17 --s anat3T18 --s anat3T19 --s anat3T20 --s anat3T21 --s anat3T22 --s anat3T23 --s anat3T24 --s anat3T25 --s anat3T26 --s anat3T27 --s anat3T28 --s anat3T29 --s anat3T30 --s anat3T31 --s anat3T32 --s anat3T33 --s anat3T34 --s anat3T35 --s anat3T36 --s anat3T37 --s anat3T38 --s anat3T39 --s anat3T40 --s anat3T41 --target fsaverage --hemi $hemi --meas R1_projdist0.$dist.mgh --fwhm $fwhm --hemi $hemi --out $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/${hemi}.R1.fsaverage.mgh
+
+
+done
+
+
+
+done
+
+done
+

@@ -1,0 +1,25 @@
+#!/bin/bash
+
+#Comments: This converts any annotation files into a set of labels that define the file.
+
+
+SUBJECTS_DIR=freesurfer
+
+#input a list of annotatin files
+for annot in $@
+do
+
+# if directory does not exist create directory
+if [ ! -e ./$SUBJECTS_DIR/mask/$annot] 
+then
+mkdir ./$SUBJECTS_DIR/mask/$annot
+fi
+
+
+for hemi in lh rh
+do
+mri_annotation2label --annotation $annot --hemi $hemi --subject fsaverage --outdir ./$SUBJECTS_DIR/mask/${annot}_Labels
+done
+
+done
+

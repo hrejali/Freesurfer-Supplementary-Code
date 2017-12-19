@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for subj in $@
+do
+fslmaths $subj/extra_mri/t1map.nii.gz -uthr 10000 $subj/extra_mri/t1map.nii.gz 
+done

@@ -1,0 +1,80 @@
+#!/bin/bash
+
+
+SUBJECTS_DIR=freesurfer
+
+
+
+for hemi in lh rh
+do
+
+for thresh in 1.3 2
+do
+for sign in neg pos
+do
+
+for fwhm in 15 20
+do
+
+
+
+for dist in 2
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output ]
+then
+
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_glmfit-sim --glmdir $SUBJECTS_DIR/Group_Analysis/R1_projdist0.${dist}.fwhm${fwhm}/GLM_Output/${hemi}.Output --mczsim $thresh $sign
+
+done
+
+
+
+
+
+
+for frac in 5
+do
+
+#want to implement this for loop for mask, it is empty list now
+if [ ! -e $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output ]
+then
+
+
+mkdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output/Corrected
+
+fi
+
+#Subjects (anat3T01-anat3T041) Excluding anat3T15
+
+mri_glmfit-sim --glmdir $SUBJECTS_DIR/Group_Analysis/R1_projfrac0.${frac}.fwhm${fwhm}/GLM_Output/${hemi}.Output --mczsim $thresh $sign
+
+done
+
+
+
+
+
+
+done
+done
+
+done
+done
+~       
+
+
+
+
+
+
+
+
