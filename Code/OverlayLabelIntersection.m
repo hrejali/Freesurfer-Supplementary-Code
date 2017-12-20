@@ -10,7 +10,7 @@
 
 % 1) Read in Overlay data, threshold the data (R1>0), Read in Label file
 % 2) Obtain indicies corresponding to label
-% 3) Store data that is > 0
+% 3) Store data that is > 0 and < 10
 
 
 function [Struct]=OverlayLabelIntersection(Annot,subjNUM)
@@ -48,21 +48,21 @@ for i=1:2
     %...................3) Struct Info ........................
     Struct.OverlayInfo(i)=string([ProjectionTypeString{i},'0.',num2str(Depth(i))]);
     %...................4) Threshold Data  ........................
-    OverlayThresh_lh=Overlay_lh.vol>0;
+    OverlayThresh_lh=Overlay_lh.vol>0 & Overlay_lh.vol<10 ;
     OverlayThresh_lh=Overlay_lh.vol.*OverlayThresh_lh;
     
-    OverlayThresh_rh=Overlay_rh.vol>0;
+    OverlayThresh_rh=Overlay_rh.vol>0 & Overlay_rh.vol<10;
     OverlayThresh_rh=Overlay_rh.vol.*OverlayThresh_rh;
     
     Struct.OverlayThresh(i).lh=OverlayThresh_lh;
     Struct.OverlayThresh(i).rh=OverlayThresh_rh;
     
     %%
-    %............................Saving Process................................
-    s1_Thresh=['lh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
-    s2_Thresh=['rh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
-    save_mgh(OverlayThresh_lh',s1_Thresh,Overlay_lh.vox2ras);
-    save_mgh(OverlayThresh_rh',s2_Thresh,Overlay_rh.vox2ras);
+%     %............................Saving Process................................
+%     s1_Thresh=['lh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
+%     s2_Thresh=['rh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
+%     save_mgh(OverlayThresh_lh',s1_Thresh,Overlay_lh.vox2ras);
+%     save_mgh(OverlayThresh_rh',s2_Thresh,Overlay_rh.vox2ras);
     
 end
 
