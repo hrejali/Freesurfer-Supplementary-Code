@@ -1,7 +1,7 @@
 %Name:Hossein Rejali
 %Superviser:Dr.Ali Khan
 %Date:December 19th 2017
-%Title: Threshold R1 Volume
+%Title: DataPercentage
 
 %%
 %..............................Description................................
@@ -22,12 +22,13 @@ for i=1:41
         
     end
     try
-        cd([Subj_ID,subjNUM,'/mri']);
-        R1=MRIread('R1.mgz');
-        Thresh=R1.vol>0 & R1.vol<10;
-        R1_Thresh=R1;
-        R1_Thresh.vol=R1.vol.*Thresh;
-        save_mgh(R1_Thresh.vol,'R1_Thresh.mgh',R1.vox2ras);
+        cd([Subj_ID,subjNUM,'/surf']);
+        lh_R1=MRIread('lh.R1_projdist0.2.Thresh.fsaverage.mgh');
+        rh_R1=MRIread('rh.R1_projdist0.2.Thresh.fsaverage.mgh');
+        Struct.dist.fsaverage.Thresh.lh.Percentage(i)=sum(lh_R1.vol>0)/lh_R1.width*100;
+        Struct.dist.fsaverage.Thresh.rh.Percentage(i)=sum(rh_R1.vol>0)/rh_R1.width*100;
+
+   
     end
    
         %do nothing
@@ -35,4 +36,3 @@ for i=1:41
  cd('../..')
     
 end
-
