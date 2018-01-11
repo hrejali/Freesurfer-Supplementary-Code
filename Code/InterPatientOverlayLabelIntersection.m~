@@ -59,15 +59,8 @@ for i=1:NumSubj
 end
 
 %%
-%............Creating plots for the mean Intensity values................
-
-%Determines if NumLabel is a perfect sqaure
-if ((sqrt(NumLabel)-round(sqer(NumLabel)))==0)
-    dim=sqrt(NumLabel);
-else
-    dim=sqrt(NumLabel)+1;
-end
-
+%Creating plots for the mean values
+%k=1;
 for i=1:NumDepth
     for j=1:NumLabel
         for k=1:NumSubj
@@ -88,19 +81,18 @@ for i=1:NumDepth
             
         end
         try
-
-            subplot(dim,dim,j); scatter(1:NumSubj,RH_Mean); 
+            subplot(3,3,j); scatter(1:NumSubj,RH_Mean); 
             hold on;
-            subplot(dim,dim,j); scatter(1:NumSubj,LH_Mean,'r');
+            subplot(3,3,j); scatter(1:NumSubj,LH_Mean,'r');
             
             STDThresh_rh=3*Output.STDAcrossSubj(j).rh.Depth(i)*ones(41)+Output.MeanAcrossSubj(j).rh.Depth(i)*ones(41);
             STDThresh_lh=3*Output.STDAcrossSubj(j).lh.Depth(i)*ones(41)+Output.MeanAcrossSubj(j).rh.Depth(i)*ones(41);
             %hold on;
             %subplot(4,19,j); plot(1:41,Output.MeanAcrossSubj(j).rh.Depth(i)*ones(41),'g--');
             hold on;
-            subplot(dim,dim,j); plot(1:NumSubj,STDThresh_rh,'r--');
+            subplot(3,3,j); plot(1:NumSubj,STDThresh_rh,'r--');
             hold on;
-            subplot(dim,dim,j); plot(1:NumSubj,STDThresh_lh,'b--');
+            subplot(3,3,j); plot(1:NumSubj,STDThresh_lh,'b--');
             xlim([0 NumSubj])
             title(Output.LabelName(j));
             xlabel('Subjects');

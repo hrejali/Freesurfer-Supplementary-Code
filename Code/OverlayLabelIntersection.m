@@ -57,12 +57,6 @@ for i=1:2
     Struct.OverlayThresh(i).lh=OverlayThresh_lh;
     Struct.OverlayThresh(i).rh=OverlayThresh_rh;
     
-    %%
-%     %............................Saving Process................................
-%     s1_Thresh=['lh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
-%     s2_Thresh=['rh.R1_','proj',ProjectionTypeString{i},'0.',int2str(Depth(i)),'.Thresh','.fsaverage','.mgh'];
-%     save_mgh(OverlayThresh_lh',s1_Thresh,Overlay_lh.vox2ras);
-%     save_mgh(OverlayThresh_rh',s2_Thresh,Overlay_rh.vox2ras);
     
 end
 
