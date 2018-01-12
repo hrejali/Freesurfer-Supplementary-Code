@@ -62,7 +62,7 @@ end
 %............Creating plots for the mean Intensity values................
 
 %Determines if NumLabel is a perfect sqaure
-if ((sqrt(NumLabel)-round(sqer(NumLabel)))==0)
+if ((sqrt(NumLabel)-round(sqrt(NumLabel)))==0)
     dim=sqrt(NumLabel);
 else
     dim=sqrt(NumLabel)+1;
