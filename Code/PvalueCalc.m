@@ -13,7 +13,7 @@
 fsHome='/home/hrejali/alik_schizmyelin/freesurfer';
 cd(fsHome);
 % Import Design matrix X
-Xdir=['./Group_Analysis/Xg.dat'];
+Xdir=['./Group_Analysis/Xg.dat'];%specify where the design maxtrix is
 sizeX = [8 39];
 fileID=fopen(Xdir,'r');
 formatSpec='%f';
@@ -24,15 +24,9 @@ Size_X=size(X)
 DOF=Size_X(1)-Size_X(2);
 %%
 %Contrast Vector
-C=[-1.000 +1.000 0.000 0.000 0.000 0.000 0.000 0.000];
+C=[0.000 -1.000 +1.000 0.000 0.000 0.000 0.000 0.000 0.000];
 J=1;% Number of rows in the contrast vector
 
-%%
-%Store the Outputs in one variable
-for i=1:NumSubj
-    
-    
-end
 
 %%
 %Determine Beta
@@ -50,35 +44,24 @@ for i=2:NumLabel
         end
         
         try
-        %remove subject 9 and 15
-        y_lh(y_lh==0) = [];
-        y_lh=y_lh'; %Transpose y to be a column vector
-        y_rh(y_rh==0)=[];
-        y_rh=y_rh'; %Transpose y to be a column vector
-
-        
-        %.....................Stats Calculation......................
-        Beta_lh=inv(X'*X)*X'*y_lh;
-        Beta_rh=inv(X'*X)*X'*y_rh;
-        
-        y_hat_lh=X*Beta_lh;
-        y_hat_rh=X*Beta_rh;
-        
-        eres_lh=y_lh-y_hat_lh;
-        rvar_lh=(rssq(eres_lh)^2)/DOF;
-        
-        eres_rh=y_rh-y_hat_rh;
-        rvar_rh=(rssq(eres_rh)^2)/DOF;
-        
-        G_lh=C*Beta_lh;
-        G_rh=C*Beta_rh;
-        
-        F_lh=G_lh'*inv(C*inv(X'*X)*C')*G_lh/(J*rvar_lh);
-        F_rh=G_rh'*inv(C*inv(X'*X)*C')*G_rh/(J*rvar_rh);
-        
-        Output.Fcalc.Label(i).lh.Depth(j)=F_lh;
-        Output.Fcalc.Label(i).rh.Depth(j)=F_lh;
-
+            %remove subject 9 and 15
+            y_lh(y_lh==0) = [];
+            y_lh=y_lh'; %Transpose y to be a column vector
+            y_rh(y_rh==0)=[];
+            y_rh=y_rh'; %Transpose y to be a column vector
+            
+            
+            %.....................Stats Calculation......................
+            m_lh=GeneralizedLinearModel.fit(X,y_lh);
+            m_rh=GeneralizedLinearModel.fit(X,y_rh);
+            [p_lh,F_lh]=coefTest(m_lh,C);
+            [p_rh,F_rh]=coefTest(m_rh,C);
+            
+            Output.FcalcM.Label(i).lh.Depth(j)=F_lh;
+            Output.FcalcM.Label(i).rh.Depth(j)=F_rh;
+            
+            Output.PcalcM.Label(i).lh.Depth(j)=p_lh;
+            Output.PcalcM.Label(i).rh.Depth(j)=p_rh;
         end
         
     end

@@ -58,13 +58,11 @@ for i=2:NumLabel
         
         Beta_lh=inv(X'*X)*X'*y_lh;
         Beta_rh=inv(X'*X)*X'*y_rh;
-        Output.LabelBeta(j).lh.Depth(k)=Beta_lh;
-        Output.LabelBeta(j).rh.Depth(k)=Beta_rh;
         
         y_hat_lh=Beta_lh*X;
         y_hat_rh=Beta_rh*X;
         
-        eres_lh=y-Output.Subj(i).LabelMean(j).lh.Depth(k);
+        eres_lh=y-Output.Subj(i).LabelMean(i).lh.Depth(j);
         rvar_lh=(rssq(eres_lh)^2)/DOF;
         
         eres_rh=y-Output.Subj(i).LabelMean(j).rh.Depth(k);
