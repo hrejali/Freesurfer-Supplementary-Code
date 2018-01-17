@@ -18,8 +18,6 @@
 %..........................................................................
 %%
 clc;
-clear;
-
 %%
 %........................Run Through Patients of Interest.................
 
@@ -27,7 +25,7 @@ clear;
 Path='/home/hrejali/khangrp/users/alik/projects/SchizNottingham7T_Lena/vasst-dev/freesurfer';
 LUT=LUTImport;
 Subj_ID='anat3T';
-volName='aparc.a2009s+aseg.mgz';
+volName='aparc+aseg.mgz';
 
 Table=LUT;
 output=struct;
