@@ -50,10 +50,12 @@ for i=1:2
     %...................4) Threshold Data  ........................
     OverlayThresh_lh=Overlay_lh.vol>0 & Overlay_lh.vol<10 ;
     OverlayThresh_lh=Overlay_lh.vol.*OverlayThresh_lh;
+    OverlayThresh_lh(OverlayThresh_lh==0)=nan;
     
     OverlayThresh_rh=Overlay_rh.vol>0 & Overlay_rh.vol<10;
     OverlayThresh_rh=Overlay_rh.vol.*OverlayThresh_rh;
-    
+    OverlayThresh_rh(OverlayThresh_rh==0)=nan;
+
     Struct.OverlayThresh(i).lh=OverlayThresh_lh;
     Struct.OverlayThresh(i).rh=OverlayThresh_rh;
     
