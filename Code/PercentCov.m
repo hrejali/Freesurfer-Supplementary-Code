@@ -17,7 +17,7 @@ cd(Path)
 %%
 Mask=MRIread('brainmask.mgz');
 try
-    R1Map=MRIread('R1.mgz');
+    R1Map=MRIread('R1_Thresh.mgz');
 catch
     disp('ERROR:R1.mgz Does Not Exist or Cannot Be Found')
     return;

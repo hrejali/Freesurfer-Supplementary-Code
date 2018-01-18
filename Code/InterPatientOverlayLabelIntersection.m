@@ -47,8 +47,8 @@ for i=1:NumSubj
     for j=1:NumLabel
         for k=1:NumDepth
             try
-                Output.Subj(i).LabelMean(j).lh.Depth(k)=mean(Output.Subj(i).OverlayThresh(k).lh(Output.Label(j).lh));
-                Output.Subj(i).LabelMean(j).rh.Depth(k)=mean(Output.Subj(i).OverlayThresh(k).rh(Output.Label(j).rh));
+                Output.Subj(i).LabelMean(j).lh.Depth(k)=mean(Output.Subj(i).OverlayThresh(k).lh(Output.Label(j).lh),'omitnan');
+                Output.Subj(i).LabelMean(j).rh.Depth(k)=mean(Output.Subj(i).OverlayThresh(k).rh(Output.Label(j).rh),'omitnan');
                 
                 
             catch
