@@ -1,6 +1,59 @@
 #!/bin/bash
 
-for subj in $@
-do
-fslmaths $subj/extra_mri/t1map.nii.gz -uthr 10000 $subj/extra_mri/t1map.nii.gz 
+#.................................
+#
+#......Name:Hossein Rejali....
+#....Superviser:Dr.Ali Khan....
+#....Date:January 11th 2017....
+#....Title: 1.0_pre_procT1map....
+#
+#..................................
+echo "..............................................PRE-PROCESSING T1 MAP..........................................." 
+
+#for subj in $@
+#do
+#fslmaths $INPUTE_DIR/*T1map.nii.gz -uthr 10000 $OUTPUT_DIR/t1map.nii.gz
+#done
+
+getopts i:o:
+while getopts i:o:s: opt;do
+	case $opt in
+		i ) #process option i
+			echo "specified BIDS directory as $OPTARG"
+			BIDSDIR=$OPTARG
+			;;
+		o ) #process option o
+			echo "specified output directroy as $OPTARG"
+			OUTPUT_DIR=$OPTARG
+			;;
+		#s ) # Specify directory of subject list
+		#	echo "specified subject list directory as $OPTARG"
+
+		#	;;
+		\? ) echo "usage: cmd [-i] [-o]" #NOTE invalid option is assigned the value ?
+			;;
+
+
+
+
+	esac
+
 done
+
+
+#Make sure OUTPUT_DIR exist
+
+
+#look into participant file and obtain each subject
+#Note requires absolute paths!!
+
+while read -r -a array; do 
+	echo "${array[0]}"; 
+	fslmaths $BIDSDIR/${array[0]}/anat/*T1map.nii.gz -uthr 10000 $OUTPUT_DIR/${array[0]}.nii.gz	
+done < $BIDSDIR/participants.tsv
+
+
+
+
+
+echo "..........................................END OF 1.0_PREPROCT1MAP................................................"
