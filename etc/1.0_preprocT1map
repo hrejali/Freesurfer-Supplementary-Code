@@ -26,11 +26,8 @@ while getopts i:o:s: opt;do
 			echo "specified output directroy as $OPTARG"
 			OUTPUT_DIR=$OPTARG
 			;;
-		#s ) # Specify directory of subject list
-		#	echo "specified subject list directory as $OPTARG"
-
-		#	;;
-		\? ) echo "usage: cmd [-i] [-o]" #NOTE invalid option is assigned the value ?
+		\? ) # Case wich invalid option were used
+			echo "usage: cmd [-i] [-o]" #NOTE invalid option is assigned the value ?
 			;;
 
 
