@@ -10,13 +10,34 @@
 #..................................
 echo "..............................................PRE-PROCESSING T1 MAP..........................................." 
 
-#for subj in $@
-#do
-#fslmaths $INPUTE_DIR/*T1map.nii.gz -uthr 10000 $OUTPUT_DIR/t1map.nii.gz
-#done
 
-getopts i:o:
-while getopts i:o:s: opt;do
+function usage {
+ echo ""
+ echo "Usage: ${0##*/}   <subjid/list> <options>"
+ echo "   -i input_dir   Set BIDS input directory"
+ echo "   -o output_dir  Set output directory (default .)"
+ echo "   -u             Set upper threshold "
+ echo "   -l             Set lower threshold"
+ echo ""
+ echo " e.g. Threshold image for entire BIDS dataset with lower and upper bounds:"
+ echo ""
+}
+
+# Not sure what this does? but it seems to call the usage function when no inputs entered
+. functions_checkargs
+
+if [ "$#" -lt 2 ]
+then
+ usage
+ exit 0
+fi
+
+
+
+
+
+#Extracting information from mandatory flags -i (BIDS directory) and -o (Output Directory) 
+while getopts i:o:u:l: opt;do
 	case $opt in
 		i ) #process option i
 			echo "specified BIDS directory as $OPTARG"
@@ -26,10 +47,19 @@ while getopts i:o:s: opt;do
 			echo "specified output directroy as $OPTARG"
 			OUTPUT_DIR=$OPTARG
 			;;
-		\? ) # Case wich invalid option were used
-			echo "usage: cmd [-i] [-o]" #NOTE invalid option is assigned the value ?
+		u ) # Upper threshold
+			echo "Taking the upper threshold as $OPTARG"
+			uthr=$OPTARG
 			;;
-
+		l ) #lower threshold 
+			echo "Taking the lower threshold as $OPTARG"
+			thr=$OPTARG
+			;;
+		\? ) # Case wich invalid option were used
+			echo "usage: cmd [-i] [-o] [-uthr] [lthr]" #NOTE invalid option is assigned the value ?
+			;;
+		 * ) usage
+			exit 0;;
 
 
 
@@ -43,14 +73,33 @@ done
 
 #look into participant file and obtain each subject
 #Note requires absolute paths!!
+list=$(ls $BIDSDIR | grep 'sub')
 
-while read -r -a array; do 
-	echo "${array[0]}"; 
-	fslmaths $BIDSDIR/${array[0]}/anat/*T1map.nii.gz -uthr 10000 $OUTPUT_DIR/${array[0]}.nii.gz	
-done < $BIDSDIR/participants.tsv
+for subj in $list
+do 
+	echo "$subj";
+# Thresholding Image
+	if [ ! -z "$uthr" ]
+	then
+		echo "Upper threshold set as ${uthr}"
+		fslmaths $BIDSDIR/${subj}/anat/*T1map.nii.gz -uthr ${uthr} $OUTPUT_DIR/${subj}.nii.gz
+	fi
+
+	if [ ! -z "$thr" ]
+	then
+		
+                fslmaths $BIDSDIR/${subj}/anat/*T1map.nii.gz -thr ${thr} $OUTPUT_DIR/${subj}.nii.gz
+	fi
+# Register T1 map to T1 weighted image
+reg_intrasubj_aladin t1map t1_head $subj
+
+
+
+	
+done
 
 
 
 
 
-echo "..........................................END OF 1.0_PREPROCT1MAP................................................"
+echo "..........................................END OF 2.0_PREPROCT1MAP................................................"
