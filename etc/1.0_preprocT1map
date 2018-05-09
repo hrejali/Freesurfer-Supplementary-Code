@@ -12,15 +12,17 @@ echo "..............................................PRE-PROCESSING T1 MAP.......
 
 
 function usage {
- echo ""
- echo "Usage: ${0##*/}   <subjid/list> <options>"
- echo "   -i input_dir   Set BIDS input directory"
- echo "   -o output_dir  Set output directory (default .)"
- echo "   -u             Set upper threshold "
- echo "   -l             Set lower threshold"
- echo ""
- echo " e.g. Threshold image for entire BIDS dataset with lower and upper bounds:"
- echo ""
+	echo ""
+	echo "Usage: ${0##*/}   <subjid/list> <options>"
+	echo "   -i input_dir   Set BIDS input directory"
+	echo "   -o output_dir  Set output directory (default .)"
+	echo "   -u             Set upper threshold "
+	echo "   -l             Set lower threshold"
+	echo "   -frac          Set projection fraction from pial surface"
+	echo "   -dist          Set projection distance from pial surface"
+	echo ""
+	echo " e.g. Group analysis :"
+	echo ""
 }
 
 # Not sure what this does? but it seems to call the usage function when no inputs entered
@@ -28,16 +30,16 @@ function usage {
 
 if [ "$#" -lt 2 ]
 then
- usage
- exit 0
+	usage
+	exit 0
 fi
 
 
 
-
+#.........................................EXTRACTING ARGUMENTS FROM FLAGS..............................................
 
 #Extracting information from mandatory flags -i (BIDS directory) and -o (Output Directory) 
-while getopts i:o:u:l: opt;do
+while getopts i:o:u:l:frac:dist: opt;do
 	case $opt in
 		i ) #process option i
 			echo "specified BIDS directory as $OPTARG"
@@ -55,48 +57,135 @@ while getopts i:o:u:l: opt;do
 			echo "Taking the lower threshold as $OPTARG"
 			thr=$OPTARG
 			;;
-		\? ) # Case wich invalid option were used
-			echo "usage: cmd [-i] [-o] [-uthr] [lthr]" #NOTE invalid option is assigned the value ?
+		frac ) # Choose a fraction to project from the pial surface
+			echo "Projection fraction chosen as $OPTARG"
+			frac+=("$OPTARG")	
 			;;
+		dist ) # Choose a distance to project from the pial surface
+			echo "Projection fraction chosen as $OPTARG"
+			dist+=("$OPTARG")
+			;;
+                \? ) # Case wich invalid option were used
+                        echo "usage: cmd [-i] [-o] [-uthr] [lthr]" #NOTE invalid option is assigned the value ?
+                        ;;
 		 * ) usage
 			exit 0;;
 
-
-
 	esac
 
-done
+done # end of while loop
 
+#FUTURE NOTE: Look for mandatory inputs ex. must specify either projected fraction or projected distance
+#...............................................................................................................
+#                                              <Insert code here>
+#...............................................................................................................
 
-#Make sure OUTPUT_DIR exist
+SUBJECTS_DIR=$BIDSDIR/
+#......................................................................................................................
+
+#Make sure OUTPUT_DIR exist --- Change this later when finalize your code
+if [ ! -e $OUTPUT_DIR/1.0 ]
+then
+	mkdir $OUTPUT_DIR/1.0
+
+fi
+
+if [ ! -e $OUTPUT_DIR/2.0 ]
+then    
+        mkdir $OUTPUT_DIR/2.0
+
+fi
+
+if [ ! -e $OUTPUT_DIR/3.0 ]
+then
+        mkdir $OUTPUT_DIR/3.0
+
+fi
+
 
 
 #look into participant file and obtain each subject
 #Note requires absolute paths!!
 list=$(ls $BIDSDIR | grep 'sub')
+FMRIPREP_DIR=$(ls $BIDSDIR | grep 'fmriprep')
+
+SUBJECTS_DIR=$FMRIPREP_DIR/freesurfer
 
 for subj in $list
 do 
+t1map=$BIDSDIR/${subj}/anat/*T1map.nii.gz
+
 	echo "$subj";
 # Thresholding Image
+#......................................................THRESHOLD IMAGE.................................................
 	if [ ! -z "$uthr" ]
 	then
 		echo "Upper threshold set as ${uthr}"
-		fslmaths $BIDSDIR/${subj}/anat/*T1map.nii.gz -uthr ${uthr} $OUTPUT_DIR/${subj}.nii.gz
+		fslmaths $t1map -uthr ${uthr} $OUTPUT_DIR/1.0/${subj}.nii.gz
+		t1map=$OUTPUT_DIR/1.0/${subj}.nii.gz # set t1map to thresholded image  
 	fi
 
 	if [ ! -z "$thr" ]
 	then
-		
-                fslmaths $BIDSDIR/${subj}/anat/*T1map.nii.gz -thr ${thr} $OUTPUT_DIR/${subj}.nii.gz
+		echo "Lower threshold set as ${thr}"		
+                fslmaths $t1map -thr ${thr} $OUTPUT_DIR/1.0/${subj}.nii.gz
+		t1map=$OUTPUT_DIR/1.0/${subj}.nii.gz # set t1map to thresholded image  
 	fi
-# Register T1 map to T1 weighted image
-reg_intrasubj_aladin t1map t1_head $subj
+#......................................................................................................................
+
+#NOTE: T1 map is already registered to T1 weighted image
+#......................................................CONVERT T1 TO R1................................................
+	r1map=$OUTPUT_DIR/2.0/${subj}_R1Map.nii.gz
+	r1_mgz=$OUTPUT_DIR/2.0/${subj}_R1Map.mgz
+
+	if [ ! -e $r1_mgz ]
+	then
+	#No need for resampling into freesurfer space?
+	echo "..................................Converting T1 map to R1 Map for ${subj} ......................................."
+
+	#convert to R1
+	fslmaths $t1map -mul 0 -add 1 -div $t1map -mul 1000 $r1map
+
+	mri_convert $r1map $r1_mgz -ns 1 #make sure no rescaling
+
+	fi
+#.......................................................................................................................
+
+
+#...................................................VOLUME TO SURFACE...................................................
+
+#Convert Volume to Surface
+
+	for hemi in lh rh
+	do
+		if [ ! -z "$frac" ]
+		then
+
+			for frac in $frac
+			do
+				mri_vol2surf --src $r1_mgz --regheader $subj --hemi $hemi --surf pial --out $OUTPUT_DIR/3.0 --projfrac 0.$frac
+				# No point of doing Surf2Surf already done in mris_preproc
+			done # end of frac loop
+		fi
+		
+		if [ ! -z "$dist" ]
+		then
+
+			for dist in $dist
+			do
+				mri_vol2surf --src $fs_dir/mri/R1.mgz --regheader $subj --hemi $hemi --surf pial --out $OUTPUT_DIR/3.0 --projdist 0.$dist
+				# No point of doing Surf2Surf already done in mris_preproc
+			done # end of frac loop
+
+		fi
+
+	done # end of hemi loop
 
 
 
-	
-done
+
+#.......................................................................................................................
+done # end subject loop iteration
 
 
 
